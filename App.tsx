@@ -1,5 +1,5 @@
+import './src/lib/dayjs'
 import { StatusBar } from 'expo-status-bar'
-import { Text, View } from 'react-native'
 import {
   Inter_400Regular,
   Inter_600SemiBold,
@@ -9,6 +9,7 @@ import {
 } from '@expo-google-fonts/inter'
 
 import { Loading } from './src/components/Loading'
+import { Home } from './src/screens/Home'
 
 export default function App () {
   const [fontsLoaded] = useFonts({
@@ -25,9 +26,9 @@ export default function App () {
   }
 
   return (
-    <View style={{ flex: 1, alignItems: 'center', justifyContent: 'center', backgroundColor: '#09090A' }}>
-      <Text>Hello World!</Text>
+    <>
       <StatusBar style="light" backgroundColor="transparent" translucent />
-    </View>
+      <Home />
+    </>
   )
 }
