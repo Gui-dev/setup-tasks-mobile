@@ -10,10 +10,10 @@ module.exports = {
         background: '#09090A'
       },
       fontFamily: {
-        regular: 'regulInter_400Regular',
+        regular: 'Inter_400Regular',
         semibold: 'Inter_600SemiBold',
         bold: 'Inter_700Bold',
-        extrabold: 'Inter_800ExtraBoldar'
+        extrabold: 'Inter_800ExtraBold'
       }
     }
   },
