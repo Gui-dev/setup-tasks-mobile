@@ -33,7 +33,7 @@ export const New = () => {
           Qual é o seu comprometimento ?
         </Text>
         <TextInput
-          className="text-white mt-3 pl-4 h-12 bg-zinc-800 rounded-lg border-2 border-zinc-400 focus:border-green-600"
+          className="text-white mt-3 pl-4 h-12 bg-zinc-900 rounded-lg border-2 border-zinc-800 focus:border-green-600"
           placeholder="ex: Exercícios, estudar, alimentação, etc..."
           placeholderTextColor={colors.zinc[400]}
         />
