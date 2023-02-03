@@ -1,11 +1,25 @@
-import { ScrollView, Text, View } from 'react-native'
+import { useEffect, useState } from 'react'
+import { Alert, ScrollView, Text, View } from 'react-native'
 import { useNavigation } from '@react-navigation/native'
 
 import { DAY_SIZE, HabitDay } from '../components/HabitDay'
 import { Header } from '../components/Header'
 import { generateDatesFromYearBeginning } from '../utils/generate-dates-from-year-beginning'
+import { api } from '../lib/api'
+import { AxiosError } from 'axios'
+import { Loading } from '../components/Loading'
+import dayjs from 'dayjs'
+
+type SummaryProps = Array<{
+  id: string
+  date: string
+  amount: number
+  completed: number
+}>
 
 export const Home = () => {
+  const [summary, setSummary] = useState<SummaryProps>([])
+  const [loading, setLoading] = useState(false)
   const { navigate } = useNavigation()
   const weekDays = ['D', 'S', 'T', 'Q', 'Q', 'S', 'S']
   const datesFromYearStart = generateDatesFromYearBeginning()
@@ -14,6 +28,30 @@ export const Home = () => {
 
   const handleNavigationToHabit = (date: string) => {
     navigate('habit', { date })
+  }
+
+  const fetchData = async () => {
+    try {
+      setLoading(true)
+      const { data } = await api.get('/summary')
+      setSummary(data.summaries)
+    } catch (error) {
+      const err = error as AxiosError
+      Alert.alert('Opssss', 'Não foi possível carregar seus hábitos')
+      console.log(err.stack)
+    } finally {
+      setLoading(false)
+    }
+  }
+
+  useEffect(() => {
+    fetchData()
+  }, [])
+
+  if (loading) {
+    return (
+      <Loading />
+    )
   }
 
   return (
@@ -48,9 +86,15 @@ export const Home = () => {
         >
           {
             datesFromYearStart.map(date => {
+              const dayWithHabits = summary.find(day => {
+                return dayjs(date).isSame(day.date, 'day')
+              })
               return (
                 <HabitDay
                   key={date.toString()}
+                  date={date}
+                  amount={dayWithHabits?.amount}
+                  completed={dayWithHabits?.completed}
                   onPress={() => handleNavigationToHabit(date.toISOString())}
                 />
               )
