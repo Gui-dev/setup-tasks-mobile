@@ -7,7 +7,9 @@ import {
   Inter_800ExtraBold,
   useFonts
 } from '@expo-google-fonts/inter'
+import Toast from 'react-native-toast-message'
 
+import { toastConfig } from './src/config/toastConfig'
 import { Loading } from './src/components/Loading'
 import { Routes } from './src/routes'
 
@@ -29,6 +31,7 @@ export default function App () {
     <>
       <StatusBar style="light" backgroundColor="transparent" translucent />
       <Routes />
+      <Toast config={toastConfig} />
     </>
   )
 }
