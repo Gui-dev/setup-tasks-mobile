@@ -9,6 +9,8 @@ import { Progressbar } from '../components/Progressbar'
 import { Checkbox } from '../components/Checkbox'
 import { Loading } from '../components/Loading'
 import { api } from '../lib/api'
+import { generateProgressPercentage } from '../lib/generate-progress-percentage'
+import { HabitEmpty } from '../components/HabitEmpty'
 
 interface IDayInfo {
   possibleHabits: Array<{
@@ -31,6 +33,9 @@ export const Habit = () => {
   const parseDate = dayjs(date)
   const dayOfWeek = parseDate.format('dddd')
   const dayAndMonth = parseDate.format('DD/MM')
+  const habitsProgress = dayInfo?.possibleHabits.length
+    ? generateProgressPercentage(dayInfo.possibleHabits.length, dayInfo.completedHabits.length)
+    : 0
 
   const fetchHabits = useCallback(async () => {
     try {
@@ -90,18 +95,22 @@ export const Habit = () => {
         <Text className="text-3xl text-white font-extrabold">
           {dayAndMonth}
         </Text>
-        <Progressbar progress={75} />
+        <Progressbar progress={habitsProgress} />
         <View className="mt-6">
-          {dayInfo?.possibleHabits && dayInfo?.possibleHabits.map(habit => {
-            return (
-              <Checkbox
-                key={habit.id}
-                title={habit.title}
-                onPress={() => handleToggleHabit(habit.id)}
-                checked={dayInfo.completedHabits.includes(habit.id)}
-              />
-            )
-          })}
+          {
+            dayInfo?.possibleHabits
+              ? dayInfo?.possibleHabits.map(habit => {
+                return (
+                  <Checkbox
+                    key={habit.id}
+                    title={habit.title}
+                    onPress={() => handleToggleHabit(habit.id)}
+                    checked={dayInfo.completedHabits.includes(habit.id)}
+                  />
+                )
+              })
+              : <HabitEmpty />
+          }
         </View>
       </ScrollView>
     </View>
