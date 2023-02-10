@@ -11,6 +11,7 @@ import { Loading } from '../components/Loading'
 import { api } from '../lib/api'
 import { generateProgressPercentage } from '../lib/generate-progress-percentage'
 import { HabitEmpty } from '../components/HabitEmpty'
+import clsx from 'clsx'
 
 interface IDayInfo {
   possibleHabits: Array<{
@@ -33,8 +34,11 @@ export const Habit = () => {
   const parseDate = dayjs(date)
   const dayOfWeek = parseDate.format('dddd')
   const dayAndMonth = parseDate.format('DD/MM')
-  const habitsProgress = dayInfo?.possibleHabits.length
-    ? generateProgressPercentage(dayInfo.possibleHabits.length, dayInfo.completedHabits.length)
+  const isDateInPast = parseDate.endOf('day').isBefore(new Date())
+  const habitsProgress = (dayInfo?.possibleHabits && dayInfo?.completedHabits) && dayInfo?.possibleHabits.length > 0
+    ? generateProgressPercentage(
+      dayInfo?.possibleHabits.length,
+      dayInfo?.completedHabits.length)
     : 0
 
   const fetchHabits = useCallback(async () => {
@@ -58,8 +62,9 @@ export const Habit = () => {
   }, [date])
 
   const handleToggleHabit = async (habitId: string) => {
+    const isHabitAlreadyCompleted = dayInfo!.completedHabits.includes(habitId)
     let completedHabits: string[] = []
-    if (dayInfo?.completedHabits.includes(habitId)) {
+    if (isHabitAlreadyCompleted) {
       completedHabits = dayInfo!.completedHabits.filter(habit => habit !== habitId)
     } else {
       completedHabits = [...dayInfo!.completedHabits, habitId]
@@ -96,7 +101,9 @@ export const Habit = () => {
           {dayAndMonth}
         </Text>
         <Progressbar progress={habitsProgress} />
-        <View className="mt-6">
+        <View className={clsx('mt-6', {
+          'opacity-50': isDateInPast
+        })}>
           {
             dayInfo?.possibleHabits
               ? dayInfo?.possibleHabits.map(habit => {
@@ -105,13 +112,21 @@ export const Habit = () => {
                     key={habit.id}
                     title={habit.title}
                     onPress={() => handleToggleHabit(habit.id)}
-                    checked={dayInfo.completedHabits.includes(habit.id)}
+                    checked={dayInfo.completedHabits && dayInfo.completedHabits.includes(habit.id)}
+                    disabled={isDateInPast}
                   />
                 )
               })
               : <HabitEmpty />
           }
         </View>
+        {
+          isDateInPast && (
+            <Text className="text-base text-zinc-400 mt-10">
+              Você não pode editar hábitos de uma data passada
+            </Text>
+          )
+        }
       </ScrollView>
     </View>
   )
