@@ -62,17 +62,26 @@ export const Habit = () => {
   }, [date])
 
   const handleToggleHabit = async (habitId: string) => {
-    const isHabitAlreadyCompleted = dayInfo!.completedHabits.includes(habitId)
-    let completedHabits: string[] = []
-    if (isHabitAlreadyCompleted) {
-      completedHabits = dayInfo!.completedHabits.filter(habit => habit !== habitId)
-    } else {
-      completedHabits = [...dayInfo!.completedHabits, habitId]
+    try {
+      await api.patch(`/habits/${habitId}/toggle`)
+      const isHabitAlreadyCompleted = dayInfo!.completedHabits.includes(habitId)
+      let completedHabits: string[] = []
+      if (isHabitAlreadyCompleted) {
+        completedHabits = dayInfo!.completedHabits.filter(habit => habit !== habitId)
+      } else {
+        completedHabits = [...dayInfo!.completedHabits, habitId]
+      }
+      setDayInfo({
+        possibleHabits: dayInfo!.possibleHabits,
+        completedHabits
+      })
+    } catch (error) {
+      Toast.show({
+        type: 'error',
+        text1: 'Opsss',
+        text2: 'Não foi possível atualizar o status do hábito'
+      })
     }
-    setDayInfo({
-      possibleHabits: dayInfo!.possibleHabits,
-      completedHabits
-    })
   }
 
   useEffect(() => {
